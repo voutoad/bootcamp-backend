@@ -1,0 +1,70 @@
+basePath: /api/v1
+definitions:
+  dto.CreateUserDTO:
+    properties:
+      age:
+        type: integer
+      description:
+        type: string
+      image_url:
+        type: string
+      interests:
+        type: string
+      password:
+        type: string
+      rating:
+        type: integer
+      username:
+        type: string
+    type: object
+  dto.UserResponseDTO:
+    properties:
+      age:
+        type: integer
+      description:
+        type: string
+      image_url:
+        type: string
+      interests:
+        type: string
+      rating:
+        type: integer
+      tags:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:5000
+info:
+  contact: {}
+  description: Simple backend for PickMe product
+  title: PickMe API
+  version: "1.0"
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with given body
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.UserResponseDTO'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create user
+      tags:
+      - users
+swagger: "2.0"
