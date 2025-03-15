@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 
-	"github.com/google/uuid"
 	"github.com/voutoad/bootcamp-backend/internal/domain/dto"
 	"github.com/voutoad/bootcamp-backend/internal/domain/ent"
 	"github.com/voutoad/bootcamp-backend/internal/domain/ent/predicate"
@@ -15,7 +14,7 @@ type UserStore interface {
 	CreateUser(user *dto.CreateUserDTO) (*dto.UserResponseDTO, error)
 	GetUserByUsername(username string) (*dto.UserResponseDTO, error)
 	GetUsersWithFilters(query *dto.UsersQueryDTO) ([]*dto.UserResponseDTO, error)
-	DeleteUser(id uuid.UUID) error
+	UpdateUserTags(user *dto.UserUpdateDTO) error
 }
 
 func NewUserStore(client *ent.Client) UserStore {
@@ -106,11 +105,14 @@ func (s *userStore) GetUsersWithFilters(query *dto.UsersQueryDTO) ([]*dto.UserRe
 	return resp, nil
 }
 
-func (s *userStore) UpdateUser(id uuid.UUID, user string) error {
-	return nil
-}
-
-func (s *userStore) DeleteUser(id uuid.UUID) error {
+func (s *userStore) UpdateUserTags(u *dto.UserUpdateDTO) error {
+	n, err := s.client.User.Update().Where(user.Username(u.Username)).SetTags(u.Tags).Save(context.Background())
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return &ent.NotFoundError{}
+	}
 	return nil
 }
 

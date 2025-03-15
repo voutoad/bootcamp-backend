@@ -6,6 +6,7 @@ import (
 	"github.com/voutoad/bootcamp-backend/internal/adapters/controllers/rest/handler"
 	"github.com/voutoad/bootcamp-backend/internal/adapters/store"
 	"github.com/voutoad/bootcamp-backend/internal/domain/dto"
+	"github.com/voutoad/bootcamp-backend/internal/domain/ent"
 )
 
 type UserHandler interface {
@@ -31,6 +32,7 @@ func (h *userHandler) RegisterRoutes(group fiber.Router) {
 	users := group.Group("/users")
 	users.Post("/", h.createUser)
 	users.Get("/", h.getUsers)
+	users.Patch("/", h.updateUserTags)
 	users.Get("/:username", h.getUser)
 }
 
@@ -107,4 +109,36 @@ func (h *userHandler) getUsers(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(users)
+}
+
+// updateUserTags godoc
+// @Summary      Update user tags
+// @Description  Updating user tags with given username and tags
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        userUpdate   body      dto.UserUpdateDTO  true  "User Update"
+// @Success      204
+// @Failure      400
+// @Failure      404
+// @Failure      500
+// @Router       /users [patch]
+func (h *userHandler) updateUserTags(c *fiber.Ctx) error {
+	req := &dto.UserUpdateDTO{}
+	if err := req.Validate(c, h.validator); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	if err := h.userStore.UpdateUserTags(req); err != nil {
+		if ent.IsNotFound(err) {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusNoContent).JSON(nil)
 }
