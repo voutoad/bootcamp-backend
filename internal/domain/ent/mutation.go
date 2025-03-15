@@ -43,6 +43,7 @@ type UserMutation struct {
 	image_url     *string
 	tags          *string
 	password      *string
+	_type         *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*User, error)
@@ -507,6 +508,42 @@ func (m *UserMutation) ResetPassword() {
 	m.password = nil
 }
 
+// SetType sets the "type" field.
+func (m *UserMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *UserMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *UserMutation) ResetType() {
+	m._type = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -541,7 +578,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
 	}
@@ -565,6 +602,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.password != nil {
 		fields = append(fields, user.FieldPassword)
+	}
+	if m._type != nil {
+		fields = append(fields, user.FieldType)
 	}
 	return fields
 }
@@ -590,6 +630,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Tags()
 	case user.FieldPassword:
 		return m.Password()
+	case user.FieldType:
+		return m.GetType()
 	}
 	return nil, false
 }
@@ -615,6 +657,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldTags(ctx)
 	case user.FieldPassword:
 		return m.OldPassword(ctx)
+	case user.FieldType:
+		return m.OldType(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -679,6 +723,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPassword(v)
+		return nil
+	case user.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -794,6 +845,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPassword:
 		m.ResetPassword()
+		return nil
+	case user.FieldType:
+		m.ResetType()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

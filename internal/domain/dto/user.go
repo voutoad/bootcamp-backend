@@ -6,13 +6,15 @@ import (
 )
 
 type CreateUserDTO struct {
-	Username    string  `json:"username"`
-	Password    string  `json:"password"`
-	Age         int     `json:"age"`
-	Rating      int     `json:"rating"`
-	Description string  `json:"description"`
-	Interests   string  `json:"interests"`
-	ImageURL    *string `json:"image_url,omitempty"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	Age         int    `json:"age"`
+	Rating      int    `json:"rating"`
+	Description string `json:"description"`
+	Interests   string `json:"interests"`
+	Type        string `json:"type"`
+
+	ImageURL *string `json:"image_url,omitempty"`
 }
 
 func (u *CreateUserDTO) Validate(c *fiber.Ctx, v *validator.Validate) error {
@@ -26,11 +28,18 @@ func (u *CreateUserDTO) Validate(c *fiber.Ctx, v *validator.Validate) error {
 }
 
 type UserResponseDTO struct {
-	Username    string  `json:"username"`
-	Age         int     `json:"age"`
-	Rating      int     `json:"rating"`
-	Description string  `json:"description"`
-	Interests   string  `json:"interests"`
-	ImageURL    *string `json:"image_url,omitempty"`
-	Tags        *string `json:"tags,omitempty"`
+	Username    string `json:"username"`
+	Age         int    `json:"age"`
+	Rating      int    `json:"rating"`
+	Description string `json:"description"`
+	Interests   string `json:"interests"`
+	Type        string `json:"type"`
+
+	ImageURL *string `json:"image_url,omitempty"`
+	Tags     *string `json:"tags,omitempty"`
+}
+
+type UsersQueryDTO struct {
+	Tags *[]*string `query:"tag,omitempty"`
+	Type *string    `query:"type,omitempty"`
 }

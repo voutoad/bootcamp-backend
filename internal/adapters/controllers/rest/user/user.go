@@ -11,6 +11,8 @@ import (
 type UserHandler interface {
 	handler.Handler
 	createUser(c *fiber.Ctx) error
+	getUser(c *fiber.Ctx) error
+	getUsers(c *fiber.Ctx) error
 }
 
 type userHandler struct {
@@ -26,7 +28,10 @@ func NewUserHandler(userStore store.UserStore, validator *validator.Validate) Us
 }
 
 func (h *userHandler) RegisterRoutes(group fiber.Router) {
-	group.Post("/users", h.createUser)
+	users := group.Group("/users")
+	users.Post("/", h.createUser)
+	users.Get("/", h.getUsers)
+	users.Get("/:username", h.getUser)
 }
 
 // createUser godoc
@@ -54,4 +59,52 @@ func (h *userHandler) createUser(c *fiber.Ctx) error {
 		})
 	}
 	return c.Status(fiber.StatusCreated).JSON(resp)
+}
+
+// getUserByUsername godoc
+// @Summary      Get user by his username
+// @Description  Get user with given username or get a 404 error
+// @Tags         users
+// @Produce      json
+// @Param        username   path      string  true  "Username"
+// @Success      200  {object}  dto.UserResponseDTO
+// @Failure      400
+// @Failure      500
+// @Router       /users/{username} [get]
+func (h *userHandler) getUser(c *fiber.Ctx) error {
+	username := c.Params("username")
+	user, err := h.userStore.GetUserByUsername(username)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(user)
+}
+
+// getUsers godoc
+// @Summary      Get users
+// @Description  Get user with optional filters
+// @Tags         users
+// @Produce      json
+// @Param        type   query      string  true  "Type"
+// @Param        tag   query      string  true  "Tag"
+// @Success      200  {object}  []dto.UserResponseDTO
+// @Failure      400
+// @Failure      500
+// @Router       /users [get]
+func (h *userHandler) getUsers(c *fiber.Ctx) error {
+	query := &dto.UsersQueryDTO{}
+	if err := c.QueryParser(query); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	users, err := h.userStore.GetUsersWithFilters(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(users)
 }

@@ -19,6 +19,7 @@ var (
 		{Name: "image_url", Type: field.TypeString, Nullable: true},
 		{Name: "tags", Type: field.TypeString, Nullable: true},
 		{Name: "password", Type: field.TypeString, Size: 100},
+		{Name: "type", Type: field.TypeString},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

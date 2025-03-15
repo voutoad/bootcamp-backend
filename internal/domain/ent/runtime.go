@@ -80,6 +80,10 @@ func init() {
 			return nil
 		}
 	}()
+	// userDescType is the schema descriptor for type field.
+	userDescType := userFields[9].Descriptor()
+	// user.TypeValidator is a validator for the "type" field. It is called by the builders before save.
+	user.TypeValidator = userDescType.Validators[0].(func(string) error)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.DefaultID holds the default value on creation for the id field.

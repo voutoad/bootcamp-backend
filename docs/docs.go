@@ -16,6 +16,49 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/users": {
+            "get": {
+                "description": "Get user with optional filters",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Type",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tag",
+                        "name": "tag",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.UserResponseDTO"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new user with given body",
                 "consumes": [
@@ -54,6 +97,41 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{username}": {
+            "get": {
+                "description": "Get user with given username or get a 404 error",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user by his username",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -77,6 +155,9 @@ const docTemplate = `{
                 },
                 "rating": {
                     "type": "integer"
+                },
+                "type": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"
@@ -102,6 +183,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tags": {
+                    "type": "string"
+                },
+                "type": {
                     "type": "string"
                 },
                 "username": {
