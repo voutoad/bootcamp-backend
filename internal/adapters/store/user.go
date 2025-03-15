@@ -67,6 +67,7 @@ func (s *userStore) GetUserByUsername(username string) (*dto.UserResponseDTO, er
 		Description: u.Description,
 		Type:        u.Type,
 		ImageURL:    u.ImageURL,
+		Tags:        u.Tags,
 	}, nil
 }
 
@@ -94,6 +95,7 @@ func (s *userStore) GetUsersWithFilters(query *dto.UsersQueryDTO) ([]*dto.UserRe
 			Description: u.Description,
 			Type:        u.Type,
 			ImageURL:    u.ImageURL,
+			Tags:        u.Tags,
 		}
 	}
 	return resp, nil
