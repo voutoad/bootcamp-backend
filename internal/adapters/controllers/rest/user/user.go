@@ -1,6 +1,9 @@
 package user
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/voutoad/bootcamp-backend/internal/adapters/controllers/rest/handler"
@@ -56,6 +59,7 @@ func (h *userHandler) createUser(c *fiber.Ctx) error {
 	}
 	resp, err := h.userStore.CreateUser(user)
 	if err != nil {
+		log.Println(err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
 		})
@@ -126,6 +130,7 @@ func (h *userHandler) getUsers(c *fiber.Ctx) error {
 func (h *userHandler) updateUserTags(c *fiber.Ctx) error {
 	req := &dto.UserUpdateDTO{}
 	if err := req.Validate(c, h.validator); err != nil {
+		fmt.Println(err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})

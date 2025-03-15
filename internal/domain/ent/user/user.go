@@ -26,8 +26,6 @@ const (
 	FieldImageURL = "image_url"
 	// FieldTags holds the string denoting the tags field in the database.
 	FieldTags = "tags"
-	// FieldPassword holds the string denoting the password field in the database.
-	FieldPassword = "password"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// Table holds the table name of the user in the database.
@@ -44,7 +42,6 @@ var Columns = []string{
 	FieldRating,
 	FieldImageURL,
 	FieldTags,
-	FieldPassword,
 	FieldType,
 }
 
@@ -69,8 +66,6 @@ var (
 	InterestsValidator func(string) error
 	// RatingValidator is a validator for the "rating" field. It is called by the builders before save.
 	RatingValidator func(int) error
-	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
-	PasswordValidator func(string) error
 	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	TypeValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
@@ -118,11 +113,6 @@ func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
 // ByTags orders the results by the tags field.
 func ByTags(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTags, opts...).ToFunc()
-}
-
-// ByPassword orders the results by the password field.
-func ByPassword(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPassword, opts...).ToFunc()
 }
 
 // ByType orders the results by the type field.

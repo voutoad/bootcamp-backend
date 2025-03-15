@@ -10,7 +10,6 @@ import (
 
 type CreateUserDTO struct {
 	Username    string `json:"username" validate:"required,min=2,max=100"`
-	Password    string `json:"password" validate:"required,min=8,max=100"`
 	Age         int    `json:"age" validate:"required,min=0,max=100"`
 	Rating      int    `json:"rating" validate:"required,min=0,max=100"`
 	Description string `json:"description" validate:"required,min=2,max=100"`
@@ -49,7 +48,7 @@ type UsersQueryDTO struct {
 
 type UserUpdateDTO struct {
 	Username string `json:"username" validate:"required,min=2,max=100"`
-	Tags     string `json:"tags" validate:"required,min=4,max=100"`
+	Tags     string `json:"tags" validate:"required,min=4"`
 }
 
 func (u *UserUpdateDTO) Validate(c *fiber.Ctx, v *validator.Validate) error {

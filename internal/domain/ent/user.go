@@ -31,8 +31,6 @@ type User struct {
 	ImageURL *string `json:"image_url,omitempty"`
 	// Tags holds the value of the "tags" field.
 	Tags *string `json:"tags,omitempty"`
-	// Password holds the value of the "password" field.
-	Password string `json:"password,omitempty"`
 	// Type holds the value of the "type" field.
 	Type         string `json:"type,omitempty"`
 	selectValues sql.SelectValues
@@ -45,7 +43,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldAge, user.FieldRating:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUsername, user.FieldDescription, user.FieldInterests, user.FieldImageURL, user.FieldTags, user.FieldPassword, user.FieldType:
+		case user.FieldUsername, user.FieldDescription, user.FieldInterests, user.FieldImageURL, user.FieldTags, user.FieldType:
 			values[i] = new(sql.NullString)
 		case user.FieldID:
 			values[i] = new(uuid.UUID)
@@ -114,12 +112,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.Tags = new(string)
 				*u.Tags = value.String
 			}
-		case user.FieldPassword:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field password", values[i])
-			} else if value.Valid {
-				u.Password = value.String
-			}
 		case user.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -186,9 +178,6 @@ func (u *User) String() string {
 		builder.WriteString("tags=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(u.Password)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(u.Type)

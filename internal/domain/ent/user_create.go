@@ -78,12 +78,6 @@ func (uc *UserCreate) SetNillableTags(s *string) *UserCreate {
 	return uc
 }
 
-// SetPassword sets the "password" field.
-func (uc *UserCreate) SetPassword(s string) *UserCreate {
-	uc.mutation.SetPassword(s)
-	return uc
-}
-
 // SetType sets the "type" field.
 func (uc *UserCreate) SetType(s string) *UserCreate {
 	uc.mutation.SetType(s)
@@ -187,14 +181,6 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "rating", err: fmt.Errorf(`ent: validator failed for field "User.rating": %w`, err)}
 		}
 	}
-	if _, ok := uc.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "User.password"`)}
-	}
-	if v, ok := uc.mutation.Password(); ok {
-		if err := user.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
-		}
-	}
 	if _, ok := uc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "User.type"`)}
 	}
@@ -265,10 +251,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Tags(); ok {
 		_spec.SetField(user.FieldTags, field.TypeString, value)
 		_node.Tags = &value
-	}
-	if value, ok := uc.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
-		_node.Password = value
 	}
 	if value, ok := uc.mutation.GetType(); ok {
 		_spec.SetField(user.FieldType, field.TypeString, value)

@@ -7,7 +7,6 @@ import (
 	"github.com/voutoad/bootcamp-backend/internal/domain/ent"
 	"github.com/voutoad/bootcamp-backend/internal/domain/ent/predicate"
 	"github.com/voutoad/bootcamp-backend/internal/domain/ent/user"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserStore interface {
@@ -30,13 +29,8 @@ type userStore struct {
 }
 
 func (s *userStore) CreateUser(user *dto.CreateUserDTO) (*dto.UserResponseDTO, error) {
-	password, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
 	u, err := s.client.User.Create().
 		SetUsername(user.Username).
-		SetPassword(string(password)).
 		SetAge(user.Age).
 		SetInterests(user.Interests).
 		SetRating(user.Rating).

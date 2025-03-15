@@ -42,7 +42,6 @@ type UserMutation struct {
 	addrating     *int
 	image_url     *string
 	tags          *string
-	password      *string
 	_type         *string
 	clearedFields map[string]struct{}
 	done          bool
@@ -472,42 +471,6 @@ func (m *UserMutation) ResetTags() {
 	delete(m.clearedFields, user.FieldTags)
 }
 
-// SetPassword sets the "password" field.
-func (m *UserMutation) SetPassword(s string) {
-	m.password = &s
-}
-
-// Password returns the value of the "password" field in the mutation.
-func (m *UserMutation) Password() (r string, exists bool) {
-	v := m.password
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPassword returns the old "password" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldPassword(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPassword requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
-	}
-	return oldValue.Password, nil
-}
-
-// ResetPassword resets all changes to the "password" field.
-func (m *UserMutation) ResetPassword() {
-	m.password = nil
-}
-
 // SetType sets the "type" field.
 func (m *UserMutation) SetType(s string) {
 	m._type = &s
@@ -578,7 +541,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 8)
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
 	}
@@ -599,9 +562,6 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.tags != nil {
 		fields = append(fields, user.FieldTags)
-	}
-	if m.password != nil {
-		fields = append(fields, user.FieldPassword)
 	}
 	if m._type != nil {
 		fields = append(fields, user.FieldType)
@@ -628,8 +588,6 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.ImageURL()
 	case user.FieldTags:
 		return m.Tags()
-	case user.FieldPassword:
-		return m.Password()
 	case user.FieldType:
 		return m.GetType()
 	}
@@ -655,8 +613,6 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldImageURL(ctx)
 	case user.FieldTags:
 		return m.OldTags(ctx)
-	case user.FieldPassword:
-		return m.OldPassword(ctx)
 	case user.FieldType:
 		return m.OldType(ctx)
 	}
@@ -716,13 +672,6 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTags(v)
-		return nil
-	case user.FieldPassword:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPassword(v)
 		return nil
 	case user.FieldType:
 		v, ok := value.(string)
@@ -842,9 +791,6 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldTags:
 		m.ResetTags()
-		return nil
-	case user.FieldPassword:
-		m.ResetPassword()
 		return nil
 	case user.FieldType:
 		m.ResetType()

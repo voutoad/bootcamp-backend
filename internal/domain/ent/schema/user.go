@@ -22,7 +22,6 @@ func (User) Fields() []ent.Field {
 		field.Int("rating").Positive().Max(5),
 		field.String("image_url").Nillable().Optional(),
 		field.String("tags").Nillable().Optional(),
-		field.String("password").MinLen(8).MaxLen(100),
 		field.String("type").NotEmpty(),
 	}
 }
